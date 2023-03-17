@@ -96,13 +96,7 @@ class MailChimpService
     public function getMembersByListId(string $listId)
     {
         $memberQuery = new CallbackQuery(function (CallbackQuery $query) use ($listId) {
-            $members = $this->get("lists/$listId/members", ['offset' => $query->getOffset(), 'count' => $query->getLimit()]);
-            return array_filter(
-                $members['members'],
-                static function (array $member) {
-                    return $member['status'] === 'subscribed';
-                }
-            );
+            return $this->get("lists/$listId/members", ['offset' => $query->getOffset(), 'count' => $query->getLimit(), 'status' => 'subscribed']);
         }, function () use ($listId) {
             $list = $this->get("lists/$listId");
             return (integer)$list['stats']['member_count'];
